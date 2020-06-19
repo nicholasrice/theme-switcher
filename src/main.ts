@@ -1,5 +1,6 @@
 import { FASTDesignSystemProvider, FASTSwitch, neutralLayerL1Behavior, FASTSlider } from "@microsoft/fast-components";
-import { neutralForegroundRestBehavior } from "@microsoft/fast-components";
+import { neutralForegroundRestBehavior, createColorPalette } from "@microsoft/fast-components";
+import { parseColorHexRGB } from "@microsoft/fast-colors";
 
 FASTDesignSystemProvider;
 FASTSwitch;
@@ -13,8 +14,10 @@ FASTSwitch;
  */
 document.addEventListener("readystatechange", () => {
     if (document.readyState === "complete") {
-        const designSystemProvider = document.querySelector("fast-design-system-provider");
+        const designSystemProvider = document.querySelector("fast-design-system-provider") as FASTDesignSystemProvider;
         const themeSwitch = document.querySelector("fast-slider");
+        const accentSwitcher = document.querySelector("input[type='color'") as HTMLInputElement;
+        accentSwitcher.value = designSystemProvider.accentBaseColor;
 
         if (designSystemProvider instanceof FASTDesignSystemProvider) {
             /* #1 and #2 will be un-necessary after next publish */
@@ -37,5 +40,13 @@ document.addEventListener("readystatechange", () => {
                 });
             }
         }
+
+        accentSwitcher.addEventListener("change", (e) => {
+            if (e.target instanceof HTMLInputElement) {
+                // Change both the base color and the palette
+                designSystemProvider.accentBaseColor = e.target.value;
+                designSystemProvider.accentPalette = createColorPalette(parseColorHexRGB(e.target.value));
+            }
+        })
     }
 });
